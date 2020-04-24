@@ -167,7 +167,7 @@ class Molecule7 < Molecule
     ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
-# end
+end
 
 # class MonomarInit
 #   def initialize(molecule2)
@@ -270,6 +270,7 @@ class Poly
         end
         break if $error
         @poly[i+1] = @mono.info
+        # puts i
       end
       unless $error
         $cnt += 1
