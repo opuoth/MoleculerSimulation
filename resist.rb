@@ -4,15 +4,15 @@ $boxMaxY = 80
 $boxMaxZ = 50
 $boxMin = 0
 $molecularDist1 = 1.7
-molecularDist2 = 1.8
-molecularDist3 = 1.9
-$trials = 1000000000000
+$trials = 10000
 totalMono = 854
-# roop1 = 2
-# roop2 = totalMono
-degreePoly = 250
-# $connect = true
+degreePoly = 10
 ###############
+
+$check = []
+$error = false
+$cnt = 0
+$index = [2, 3, 1, 4, 5, 6, 7]
 
 class Molecule
   def initialize(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
@@ -62,7 +62,7 @@ class Molecule2 < Molecule
     f = rand(0..1.0)
     g = rand(0..1.0)
     omega = Math::PI * f
-    fai = Math::PI * g
+    fai = 2 * Math::PI * g
     ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
@@ -72,8 +72,8 @@ class Molecule2Init
   def initialize
     @ramuda = 1.7
     ##オリジナル##
-    theta = Math::PI * rand(0..0.5)
-    fai = Math::PI * rand(0..1.0)
+    theta = Math::PI * rand(0..1.0)
+    fai = 2 * Math::PI * rand(0..1.0)
     @CS = Math.cos(theta)
     @SS = (1-@CS**2)**0.5
     @CF = Math.cos(fai)
@@ -97,8 +97,9 @@ class Molecule3 < Molecule
     f = rand(0..1.0)
     g = rand(0..1.0)
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.549
+    fai = 2 * Math::PI * g
+    # ramuda = 1.549
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
 end
@@ -106,10 +107,15 @@ end
 class Molecule1 < Molecule
   def initialize(x:, y:, z:, cs:, ss:, cf:, sf:, vx:, vy:, vz:)
     f = 0.39183333
-    g = 0.2
+    # g = 0.2
+    loop do 
+      $g = rand(0..1.0)
+      break if $g <= 0.5 || $g >= 0.8
+    end
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.539
+    fai = 2 * Math::PI * $g
+    # ramuda = 1.539
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
 end
@@ -117,10 +123,11 @@ end
 class Molecule4 < Molecule
   def initialize(x:, y:, z:, cs:, ss:, cf:, sf:, vx:, vy:, vz:)
     f = 0.391833333
-    g = 0.53408333
+    g = 0.33408333 + $g
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.517
+    fai = 2 * Math::PI * g
+    # ramuda = 1.517
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
 end
@@ -130,8 +137,9 @@ class Molecule5 < Molecule
     f = 0.3022222
     g = 0.5
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.517
+    fai = 2 * Math::PI * g
+    # ramuda = 1.517
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
 end
@@ -141,8 +149,9 @@ class Molecule6 < Molecule
     f = 0.3811111
     g = 0
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.36
+    fai = 2 * Math::PI * g
+    # ramuda = 1.36
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
 end
@@ -150,59 +159,60 @@ end
 class Molecule7 < Molecule
   def initialize(x:, y:, z:, cs:, ss:, cf:, sf:, vx:, vy:, vz:)
     f = 0.35333333
-    g = 0.7
+    # g = 0.7
+    g = rand(0..1.0)
     omega = Math::PI * f
-    fai = Math::PI * g
-    ramuda = 1.446
+    fai = 2 * Math::PI * g
+    # ramuda = 1.446
+    ramuda = 1.7
     super(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
   end
-end
+# end
 
-class MonomarInit
-  def initialize(molecule2)
-    @molecule = {}
-    $trials.times do
-      @molecule[2] = molecule2
-      next unless check(2)
-      @molecule[3] = Molecule3.new(@molecule[2])
-      next unless check(3)
-      @molecule[1] = Molecule1.new(@molecule[3]).info
-      next unless check(1)
-      @molecule[4] = Molecule4.new(@molecule[1]).info
-      next unless check(4)
-      @molecule[5] = Molecule5.new(@molecule[4]).info
-      next unless check(5)
-      @molecule[6] = Molecule6.new(@molecule[5]).info
-      next unless check(6)
-      @molecule[7] = Molecule7.new(@molecule[6]).info
-      next unless check(7)
-    end
-  end
+# class MonomarInit
+#   def initialize(molecule2)
+#     @molecule = {}
+#     $trials.times do
+#       @molecule[2] = molecule2
+#       next unless check(2)
+#       @molecule[3] = Molecule3.new(@molecule[2])
+#       next unless check(3)
+#       @molecule[1] = Molecule1.new(@molecule[3]).info
+#       next unless check(1)
+#       @molecule[4] = Molecule4.new(@molecule[1]).info
+#       next unless check(4)
+#       @molecule[5] = Molecule5.new(@molecule[4]).info
+#       next unless check(5)
+#       @molecule[6] = Molecule6.new(@molecule[5]).info
+#       next unless check(6)
+#       @molecule[7] = Molecule7.new(@molecule[6]).info
+#       next unless check(7)
+#     end
+#   end
 
-  def info
-    @molecule
-  end
+#   def info
+#     @molecule
+#   end
 
-  def check(k)
-    return false if @molecule[k][:x]>$boxMaxX || @molecule[k][:y]>$boxMaxY || @molecule[k][:z]>$boxMaxZ || @molecule[k][:x]<$boxMin || @molecule[k][:y]<$boxMin || @molecule[k][:z]<$boxMin
-    @num.times do |n|
-      $resist[n+1].each do |_, mono|
-        mono.each do |_,v|
-          r = Math.sqrt((v[:x] - @molecule[k][:x])**2 + (v[:y] - @molecule[k][:y])**2 + (v[:z] - @molecule[k][:z])**2) 
-          return false if r < $molecularDist1
-        end
-      end
-    end
-    return true
-  end
-end
+#   def check(k)
+#     return false if @molecule[k][:x]>$boxMaxX || @molecule[k][:y]>$boxMaxY || @molecule[k][:z]>$boxMaxZ || @molecule[k][:x]<$boxMin || @molecule[k][:y]<$boxMin || @molecule[k][:z]<$boxMin
+#     $check.each do |mono|
+#       mono.each do |_, atom|
+#         r = Math.sqrt((atom[:x] - @molecule[k][:x])**2 + (atom[:y] - @molecule[k][:y])**2 + (atom[:z] - @molecule[k][:z])**2)
+#         return false if r < $molecularDist1
+#       end
+#     end
+#     return true
+#   end
+# end
 
 class Monomar
   def initialize(num, i, molecule3 = {})
     @num = num
     @i = i
     @molecule = {}
-    $trials.times do
+    $trials.times do |try|
+      $error = true if try == $trials -1
       #繋がってるかどうか
       if molecule3.empty?
         @molecule[2] = Molecule2Init.new.info #繋がっていない
@@ -222,6 +232,8 @@ class Monomar
       next unless check(6)
       @molecule[7] = Molecule7.new(@molecule[6]).info
       next unless check(7)
+      $error = false
+      $check.push(@molecule)
       break
     end
   end
@@ -236,21 +248,10 @@ class Monomar
 
   def check(k)
     return false if @molecule[k][:x]>$boxMaxX || @molecule[k][:y]>$boxMaxY || @molecule[k][:z]>$boxMaxZ || @molecule[k][:x]<$boxMin || @molecule[k][:y]<$boxMin || @molecule[k][:z]<$boxMin
-    # @num.times do |n|
-    #   $resist[n+1].each do |nMono, mono|
-    #     mono.each do |_,v|
-    #       r = Math.sqrt((v[:x] - @molecule[k][:x])**2 + (v[:y] - @molecule[k][:y])**2 + (v[:z] - @molecule[k][:z])**2) 
-    #       return false if r < $molecularDist1
-    #     end
-    #   end
-    # end
-    $resist.each do |nPoly, poly|
-      poly.each do |nMono,mono|
-        next if nMono == @i && nPoly == @num
-        mono.each do |nAtom, atom|
-          r = Math.sqrt((atom[:x] - @molecule[k][:x])**2 + (atom[:y] - @molecule[k][:y])**2 + (atom[:z] - @molecule[k][:z])**2) 
-          return false if r < $molecularDist1
-        end
+    $check.each do |mono|
+      mono.each do |_, atom|
+        r = Math.sqrt((atom[:x] - @molecule[k][:x])**2 + (atom[:y] - @molecule[k][:y])**2 + (atom[:z] - @molecule[k][:z])**2)
+        return false if r < $molecularDist1
       end
     end
     return true
@@ -260,13 +261,21 @@ end
 class Poly
   def initialize(degreePoly, num)
     @poly = {}
-    degreePoly.times do |i|
-      if i == 0
-        @mono = Monomar.new(num, i)
-      else
-        @mono = Monomar.new(num, i, @mono.molecule(3))
+    while true do
+      degreePoly.times do |i|
+        if i == 0
+          @mono = Monomar.new(num, i)
+        else
+          @mono = Monomar.new(num, i, @mono.molecule(3))
+        end
+        break if $error
+        @poly[i+1] = @mono.info
       end
-      @poly[i+1] = @mono.info
+      unless $error
+        $cnt += 1
+        puts $cnt
+        break
+      end
     end
   end
 
@@ -298,11 +307,7 @@ end
 # mono = Monomar.new(1, molecule2)
 # p mono.info
 
-# poly = Poly.new(10)
-# p poly.info
-
 resist = Resist.new(degreePoly, totalMono)
-# puts $resist[86]
 
 number = 0
 n = 0
@@ -313,7 +318,6 @@ File.open("input.txt","w") do |data|
         n += 1
         mono.sort.to_h.each do |numMol, mol|
           number += 1
-          # text.puts "#{numPoly} #{numMol} #{mol[:x]} #{mol[:y]} #{mol[:z]}"
           text.printf("ATOM%7d  c    i   %3d    %8.2f%8.2f%8.2f\n", number, numMol, mol[:x]*10, mol[:y]*10, mol[:z]*10)
           data.printf("%5d%3d%5d%3d    %9.3f%9.3f%9.3f%11.5f%11.5f%11.5f\n", number, numMol, n, numPoly, mol[:x], mol[:y], mol[:z], mol[:vx], mol[:vy], mol[:vz])
         end
