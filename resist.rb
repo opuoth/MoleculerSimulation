@@ -12,7 +12,7 @@ degreePoly = 10
 $check = []
 $error = false
 $cnt = 0
-$index = [2, 3, 1, 4, 5, 6, 7]
+# $index = [2, 3, 1, 4, 5, 6, 7]
 
 class Molecule
   def initialize(x, y, z, cs, ss, cf, sf, omega, fai, ramuda, vx, vy, vz)
@@ -207,9 +207,7 @@ end
 # end
 
 class Monomar
-  def initialize(num, i, molecule3 = {})
-    @num = num
-    @i = i
+  def initialize(molecule3 = {})
     @molecule = {}
     $trials.times do |try|
       $error = true if try == $trials -1
@@ -259,18 +257,18 @@ class Monomar
 end
 
 class Poly
-  def initialize(degreePoly, num)
+  def initialize(degreePoly)
     @poly = {}
     while true do
-      degreePoly.times do |i|
-        if i == 0
-          @mono = Monomar.new(num, i)
+      degreePoly.times do |monoIndex|
+        if monoIndex == 0
+          @mono = Monomar.new()
         else
-          @mono = Monomar.new(num, i, @mono.molecule(3))
+          @mono = Monomar.new(@mono.molecule(3))
         end
         break if $error
-        @poly[i+1] = @mono.info
-        # puts i
+        @poly[monoIndex+1] = @mono.info
+        # puts monoIndex
       end
       unless $error
         $cnt += 1
@@ -290,11 +288,11 @@ class Resist
     $resist = {}
     numPoly = totalMono / degreePoly
     overPoly = totalMono % degreePoly
-    numPoly.times do |num|
-      @poly = Poly.new(degreePoly, num+1)
-      $resist[num+1] = @poly.info
+    numPoly.times do |polyIndex|
+      @poly = Poly.new(degreePoly)
+      $resist[polyIndex+1] = @poly.info
     end
-    $resist[numPoly+1] = Poly.new(overPoly, numPoly).info if overPoly != 0
+    $resist[numPoly+1] = Poly.new(overPoly).info if overPoly != 0
   end
 
   def info
@@ -310,17 +308,17 @@ end
 
 resist = Resist.new(degreePoly, totalMono)
 
-number = 0
-n = 0
+atomIndex = 0
+monoIndex = 0
 File.open("input.txt","w") do |data|
   File.open("pmma_new.pdb","w") do |text|
-    $resist.each do |numPoly, poly|
-      poly.each do |numMono, mono|
-        n += 1
-        mono.sort.to_h.each do |numMol, mol|
-          number += 1
-          text.printf("ATOM%7d  c    i   %3d    %8.2f%8.2f%8.2f\n", number, numMol, mol[:x]*10, mol[:y]*10, mol[:z]*10)
-          data.printf("%5d%3d%5d%3d    %9.3f%9.3f%9.3f%11.5f%11.5f%11.5f\n", number, numMol, n, numPoly, mol[:x], mol[:y], mol[:z], mol[:vx], mol[:vy], mol[:vz])
+    $resist.each do |polyIndex, poly|
+      poly.each do |_, mono|
+        monoIndex += 1
+        mono.sort.to_h.each do |molIndex, mol|
+          atomIndex += 1
+          text.printf("ATOM%7d  c    i   %3d    %8.2f%8.2f%8.2f\n", atomIndex, molIndex, mol[:x]*10, mol[:y]*10, mol[:z]*10)
+          data.printf("%5d%3d%5d%3d    %9.3f%9.3f%9.3f%11.5f%11.5f%11.5f\n", atomIndex, molIndex, monoIndex, polyIndex, mol[:x], mol[:y], mol[:z], mol[:vx], mol[:vy], mol[:vz])
         end
       end
     end
